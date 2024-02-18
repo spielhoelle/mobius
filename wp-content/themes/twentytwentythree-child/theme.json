@@ -1,0 +1,53 @@
+{
+	"version": 2,
+	"settings": {
+		"layout": {
+			"contentSize": "650px",
+			"wideSize": "1200px"
+		},
+		"color": {
+			"palette": [
+				{
+					"slug": "foreground",
+					"color": "#FFFFFF",
+					"name": "Foreground"
+				},
+				{
+					"slug": "background",
+					"color": "#001F29",
+					"name": "Background"
+				},
+				{
+					"slug": "primary",
+					"color": "#B50B3E",
+					"name": "Primary"
+				},
+				{
+					"slug": "secondary",
+					"color": "#FDFCDC",
+					"name": "Secondary"
+				},
+				{
+					"slug": "tertiary",
+					"color": "#FED9B7",
+					"name": "Tertiary"
+				},
+				{
+					"slug": "accent",
+					"color": "#E94435",
+					"name": "Accent"
+				}
+			],
+			"duotone": [
+				{
+					"colors": [
+						"#00FF29",
+						"#00FFFF"
+					],
+					"slug": "default-filter",
+					"name": "Default filter"
+				}
+			]
+		}
+	}
+}
