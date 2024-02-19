@@ -1,6 +1,6 @@
 import { __ } from '@wordpress/i18n'
 import { useSelect, useDispatch } from '@wordpress/data'
-import React, { } from "react";
+import React, { } from "react"
 import {
   useBlockProps, InspectorControls,
 } from '@wordpress/block-editor'
@@ -15,30 +15,43 @@ export default function Edit({ attributes, setAttributes, clientId }
     getBlockRootClientId,
     getBlockIndex,
     getBlocks,
-  } = useSelect('core/block-editor');
+  } = useSelect('core/block-editor')
 
-  const { moveBlockToPosition } = useDispatch('core/block-editor');
-  function demoMoveBlock() {
-    const blocks = getBlocks();
-    if (blocks.length < 2) {
-      alert('Stop playing now; there\'s only this block in the editor!');
-      return;
-    }
-    const blockIndex = blocks.findIndex(b => b.name === "create-block/tmy-sequence")
-    if (blockIndex !== 0) {
-      let targetBlock = blocks.splice(blockIndex, 1)[0]
-      if (clientId === targetBlock.clientId) {
-        targetBlock = blocks.shift();
-      }
-      const sourceClientId = clientId;
-      const targetClientId = targetBlock.clientId;
-      const fromRootClientId = getBlockRootClientId(sourceClientId);
-      const toRootClientId = getBlockRootClientId(targetClientId);
-      const targetIndex = getBlockIndex(targetClientId);
-      moveBlockToPosition(sourceClientId, fromRootClientId, toRootClientId, targetIndex);
-    }
-  }
+  // const { moveBlockToPosition } = useDispatch('core/block-editor')
+  // function demoMoveBlock() {
+  //   const blocks = getBlocks()
+  //   if (blocks.length < 2) {
+  //     alert('Stop playing now; there\'s only this block in the editor!')
+  //     return
+  //   }
+  //   const blockIndex = blocks.findIndex(b => b.name === "create-block/tmy-sequence")
+  //   if (blockIndex !== 0) {
+  //     let targetBlock = blocks.splice(blockIndex, 1)[0]
+  //     if (clientId === targetBlock.clientId) {
+  //       targetBlock = blocks.shift()
+  //     }
+  //     const sourceClientId = clientId
+  //     const targetClientId = targetBlock.clientId
+  //     const fromRootClientId = getBlockRootClientId(sourceClientId)
+  //     const toRootClientId = getBlockRootClientId(targetClientId)
+  //     const targetIndex = getBlockIndex(targetClientId)
+  //     moveBlockToPosition(sourceClientId, fromRootClientId, toRootClientId, targetIndex)
+  //   }
+  // }
   let posts = useSelect((select) => select('core').getEntityRecords('postType', 'attachment'), [])
+  if (posts) {
+    const tags = posts.reduce((acc, post) => {
+      post.tags.map(t => acc.add(t))
+      return acc
+    }, new Set())
+    const cats = posts.reduce((acc, post) => {
+      post.categories.map(t => acc.add(t))
+      return acc
+    }, new Set())
+
+    // console.log('cats', Array.from(cats))
+    // console.log('tags', Array.from(tags))
+  }
 
   const onChangeContent = (videoposition, attachmentId) => {
     const sequence = [...attributes.sequence]

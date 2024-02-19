@@ -9,13 +9,30 @@
 }
 
 .categories {
+  .videos {
+    height: 40vh;
+    &.active {
+      height: 100vh;
+      position: fixed;
+      top: 0;
+      z-index: 2;
+      width: 100%;
+    }
+    position: relative;
+  }
   .overlay {
     z-index: 1;
     position: absolute;
-    height: 100vh;
+    height: 100%;
     top: 0px;
     left: 0;
     object-fit: cover;
+  }
+  .category_selector {
+    margin-bottom: 10px;
+    a {
+      padding-right: 10px;
+    }
   }
 
   h2 {
@@ -30,7 +47,6 @@
   }
 
   a {
-    text-decoration: none;
     color: var(--wp--preset--color--black) !important;
   }
 

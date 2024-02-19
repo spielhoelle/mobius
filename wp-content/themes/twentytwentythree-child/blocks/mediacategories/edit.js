@@ -78,6 +78,28 @@ export default function Edit({ attributes, setAttributes, clientId }
   //     // setAttributes({ categories: options })
   //   }
   // }, [cats])
+  // let videos = []
+  let posts = useSelect((select) => select('core').getEntityRecords('postType', 'attachment'), [])
+  // let dispPosts = []
+  if (posts) {
+    // const tags = posts.reduce((acc, post) => {
+    //   post.tags.map(t => acc.add(t))
+    //   return acc
+    // }, new Set())
+    // const cats = posts.reduce((acc, post) => {
+    //   post.categories.map(t => acc.add(t))
+    //   return acc
+    // }, new Set())
+    // posts.map(p => {
+    //   attributes.categories.map(cat => {
+    //     if (p.categories.includes(cat.id)) {
+    //       dispPosts.push(p)
+    //     }
+    //   })
+    // })
+    // videos = dispPosts
+    // console.log('videos', videos)
+  }
 
   return (
     <div {...blockProps}>
@@ -90,22 +112,40 @@ export default function Edit({ attributes, setAttributes, clientId }
           <a href={seq.source_url} >{seq.title}</a>
         </div>
       )) : "No categories found."}
+      {attributes.sequence &&
+        <div className='videos'>
+          {attributes.sequence.map((seq, i) => (
+            <video
+              key={i + seq.id}
+              width='320' height='240' class={`overlay w-100`} autoPlay={i === 0} muted preload data-seqcatid={seq.categories}>
+              <source src={seq.source_url} type='video/mp4' />
+              Your browser does not support the video tag.
+            </video>
+          ))}
+        </div>
+      }
       <InspectorControls>
         <PanelBody title={__('General', 'gutenberg')} initialOpen>
           {options ? options.map((seq, i) => (
             <CheckboxControl
               label={seq.title}
-              help="Display this cat."
               checked={attributes.categories.map((p, i) => p.title).includes(seq.title)}
               onChange={() => {
-                var newCats = [...attributes.categories]
-                if (attributes.categories.map(p => p.id).includes(seq.id)) {
-                  newCats = newCats.splice(attributes.categories.findIndex(c => c.id === seq.id), 1)
+                var dispPosts = []
+                var newCats = [...attributes.categories.filter(p => p.title !== "empty")]
+                if (newCats.map(p => p.id).includes(seq.id)) {
+                  newCats = newCats.slice(newCats.findIndex(c => c.id === seq.id), 1)
                 } else {
                   newCats.push(seq)
                 }
-                console.log('newCats', newCats)
-                setAttributes({ categories: newCats })
+                posts.map(p => {
+                  newCats.map(cat => {
+                    if (p.categories.includes(cat.id)) {
+                      dispPosts.push(p)
+                    }
+                  })
+                })
+                setAttributes({ categories: newCats, sequence: dispPosts })
               }}
             />
           )) : "No categories found."}

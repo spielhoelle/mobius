@@ -4,12 +4,11 @@ import './style.scss';
 import Edit from './edit';
 import save from './save';
 
-registerBlockType('create-block/tmy-categories', {
+registerBlockType('create-block/tmy-mediacategories', {
   apiVersion: 2,
-  title: 'categories List',
-  icon: 'groups',
+  title: 'Media categories & tags',
+  icon: 'admin-media',
   category: 'widgets',
-  attributes: { categories: { type: 'array', default: [] } },
   edit: Edit,
   save,
 });

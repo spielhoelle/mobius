@@ -1,11 +1,28 @@
 const useLS = false
 const videos = [...document.querySelectorAll('.overlay')]
-const container = document.querySelector('.wp-block-create-block-tmy-sequence.sequence')
+const categories = [...document.querySelectorAll('.category_selector')]
+const container = document.querySelector('.wp-block-create-block-tmy-mediacategories.categories .videos')
 let playing = 0
 const siteBlocks = document.body
 const alreadyPlayed = localStorage.getItem('mobius_sequence')
 const alreadyPlayedTimeStamp = useLS ? Number(alreadyPlayed) : Date.now() - 80000
 if (container) {
+	categories.map((category, index) => {
+		category.addEventListener('click', function (e) {
+			e.preventDefault()
+			videos.forEach((video, i) => {
+				const videoCats = JSON.parse(video.dataset.seqcatid)
+				console.log('videoCats', videoCats)
+				if (!videoCats.includes(Number(e.target.dataset.catid))){
+					video.classList.add('hidden')
+					video.pause()
+				} else {
+					video.classList.remove('hidden')
+					video.play()
+				}
+			})
+		})
+	})
 	container.addEventListener('click', function (e) {
 		siteBlocks.classList.remove('loading')
 		if (videos[playing]) {

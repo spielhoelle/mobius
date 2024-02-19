@@ -107,28 +107,70 @@ function Edit({
   //     // setAttributes({ categories: options })
   //   }
   // }, [cats])
-
+  // let videos = []
+  let posts = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_2__.useSelect)(select => select('core').getEntityRecords('postType', 'attachment'), []);
+  // let dispPosts = []
+  if (posts) {
+    // const tags = posts.reduce((acc, post) => {
+    //   post.tags.map(t => acc.add(t))
+    //   return acc
+    // }, new Set())
+    // const cats = posts.reduce((acc, post) => {
+    //   post.categories.map(t => acc.add(t))
+    //   return acc
+    // }, new Set())
+    // posts.map(p => {
+    //   attributes.categories.map(cat => {
+    //     if (p.categories.includes(cat.id)) {
+    //       dispPosts.push(p)
+    //     }
+    //   })
+    // })
+    // videos = dispPosts
+    // console.log('videos', videos)
+  }
   return (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
     ...blockProps
   }, !attributes.categories || attributes.categories.length === 0 && (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("h2", null, "Select the videos for the loop"), attributes.categories ? (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("h2", null, "Categories") : null, attributes.categories ? attributes.categories.map((seq, i) => (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", null, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("a", {
     href: seq.source_url
-  }, seq.title))) : "No categories found.", (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_3__.InspectorControls, null, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_4__.PanelBody, {
+  }, seq.title))) : "No categories found.", attributes.sequence && (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+    className: "videos"
+  }, attributes.sequence.map((seq, i) => (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("video", {
+    key: i + seq.id,
+    width: "320",
+    height: "240",
+    class: `overlay w-100`,
+    autoPlay: i === 0,
+    muted: true,
+    preload: true,
+    "data-seqcatid": seq.categories
+  }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("source", {
+    src: seq.source_url,
+    type: "video/mp4"
+  }), "Your browser does not support the video tag."))), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_3__.InspectorControls, null, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_4__.PanelBody, {
     title: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)('General', 'gutenberg'),
     initialOpen: true
   }, options ? options.map((seq, i) => (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_4__.CheckboxControl, {
     label: seq.title,
-    help: "Display this cat.",
     checked: attributes.categories.map((p, i) => p.title).includes(seq.title),
     onChange: () => {
-      var newCats = [...attributes.categories];
-      if (attributes.categories.map(p => p.id).includes(seq.id)) {
-        newCats = newCats.splice(attributes.categories.findIndex(c => c.id === seq.id), 1);
+      var dispPosts = [];
+      var newCats = [...attributes.categories.filter(p => p.title !== "empty")];
+      if (newCats.map(p => p.id).includes(seq.id)) {
+        newCats = newCats.slice(newCats.findIndex(c => c.id === seq.id), 1);
       } else {
         newCats.push(seq);
       }
-      console.log('newCats', newCats);
+      posts.map(p => {
+        newCats.map(cat => {
+          if (p.categories.includes(cat.id)) {
+            dispPosts.push(p);
+          }
+        });
+      });
       setAttributes({
-        categories: newCats
+        categories: newCats,
+        sequence: dispPosts
       });
     }
   })) : "No categories found.")));
@@ -154,17 +196,11 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-(0,_wordpress_blocks__WEBPACK_IMPORTED_MODULE_0__.registerBlockType)('create-block/tmy-categories', {
+(0,_wordpress_blocks__WEBPACK_IMPORTED_MODULE_0__.registerBlockType)('create-block/tmy-mediacategories', {
   apiVersion: 2,
-  title: 'categories List',
-  icon: 'groups',
+  title: 'Media categories & tags',
+  icon: 'admin-media',
   category: 'widgets',
-  attributes: {
-    categories: {
-      type: 'array',
-      default: []
-    }
-  },
   edit: _edit__WEBPACK_IMPORTED_MODULE_3__["default"],
   save: _save__WEBPACK_IMPORTED_MODULE_4__["default"]
 });
@@ -193,9 +229,25 @@ function save(props) {
   });
   return (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
     ...blockProps
-  }, props.attributes.categories ? props.attributes.categories.map((seq, i) => (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", null, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("a", {
-    href: seq.source_url
-  }, seq.title))) : "No categories found.");
+  }, props.attributes.categories ? (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("h2", null, "Categories") : null, props.attributes.categories ? (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+    className: "category_selector"
+  }, props.attributes.categories.map((seq, i) => (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("a", {
+    href: seq.source_url,
+    "data-catid": seq.id
+  }, seq.title))) : "No categories found.", props.attributes.sequence && (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+    className: "videos"
+  }, props.attributes.sequence.map((seq, i) => (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("video", {
+    width: "320",
+    height: "240",
+    class: `overlay w-100 ${i !== 0 ? "hidden" : ""}`,
+    autoPlay: i === 0,
+    muted: true,
+    preload: true,
+    "data-seqcatid": JSON.stringify(seq.categories)
+  }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("source", {
+    src: seq.source_url,
+    type: "video/mp4"
+  }), "Your browser does not support the video tag."))));
 }
 
 /***/ }),

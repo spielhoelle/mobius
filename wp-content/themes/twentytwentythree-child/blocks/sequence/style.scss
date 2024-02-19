@@ -8,12 +8,6 @@
   pointer-events: none;
 }
 
-.hidden {
-  opacity: 0;
-  transition: opacity 0.5s ease;
-  pointer-events: none;
-}
-
 .sequence {
   position: relative;
   height: 40vh;

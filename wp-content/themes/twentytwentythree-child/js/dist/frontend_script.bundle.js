@@ -11,12 +11,29 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) return _arrayLikeToAr
 function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i]; return arr2; }
 var useLS = false;
 var videos = _toConsumableArray(document.querySelectorAll('.overlay'));
-var container = document.querySelector('.wp-block-create-block-tmy-sequence.sequence');
+var categories = _toConsumableArray(document.querySelectorAll('.category_selector'));
+var container = document.querySelector('.wp-block-create-block-tmy-mediacategories.categories .videos');
 var playing = 0;
 var siteBlocks = document.body;
 var alreadyPlayed = localStorage.getItem('mobius_sequence');
 var alreadyPlayedTimeStamp = useLS ? Number(alreadyPlayed) : Date.now() - 80000;
 if (container) {
+  categories.map(function (category, index) {
+    category.addEventListener('click', function (e) {
+      e.preventDefault();
+      videos.forEach(function (video, i) {
+        var videoCats = JSON.parse(video.dataset.seqcatid);
+        console.log('videoCats', videoCats);
+        if (!videoCats.includes(Number(e.target.dataset.catid))) {
+          video.classList.add('hidden');
+          video.pause();
+        } else {
+          video.classList.remove('hidden');
+          video.play();
+        }
+      });
+    });
+  });
   container.addEventListener('click', function (e) {
     siteBlocks.classList.remove('loading');
     if (videos[playing]) {

@@ -17,6 +17,16 @@
 					"title": "empty"
 				}
 			]
+		},
+		"sequence": {
+			"type": "array",
+			"default": [
+				{
+					"id": 1,
+					"source_url": "empty",
+					"title": "empty"
+				}
+			]
 		}
 	},
 	"supports": {

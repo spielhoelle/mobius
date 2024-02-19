@@ -7,6 +7,12 @@
 
 .categories {
   background-color: rgb(201, 255, 201);
+  position: relative;
+  height: auto;
+  .videos{
+    display: flex;
+    height: auto;
+  }
   .overlay {
     height: 400px;
     width: 100%;
