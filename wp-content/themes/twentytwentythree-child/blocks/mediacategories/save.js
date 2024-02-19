@@ -8,7 +8,6 @@ export default function save(props) {
   return (
     <div {...blockProps}>
       {props.attributes.categories ? <h2>Categories</h2> : null}
-
       {props.attributes.categories ? (
         <div className='category_selector'>
           {props.attributes.categories.map((seq, i) => (
@@ -16,6 +15,16 @@ export default function save(props) {
           ))}
         </div>
       ) : "No categories found."}
+      {props.attributes.tags ? <h2>Tags</h2> : null}
+      {props.attributes.tags ? (
+        <div className='category_selector'>
+          {props.attributes.tags.map((seq, i) => (
+            <a href={seq.source_url} data-catid={seq.id}>{seq.title}</a>
+          ))}
+        </div>
+
+      ) : "No tags found."}
+      <h2>Videos: (shift-click on video to toggle fullscreen)</h2>
 
       {props.attributes.sequence &&
         <div className='videos'>

@@ -62,11 +62,17 @@ export default function Edit({ attributes, setAttributes, clientId }
     className: 'categories',
   })
 
-  let options
+  let availableCats
+  let availableTags
   let cats = useSelect((select) => select('core').getEntityRecords('taxonomy', 'category'), [])
+  let existingTags = useSelect((select) => select('core').getEntityRecords('taxonomy', 'post_tag'), [])
 
   if (cats) {
-    options = cats
+    availableCats = cats
+      .map((p, i) => ({ id: p.id, source_url: p.link, title: p.name }))
+  }
+  if (existingTags) {
+    availableTags = existingTags
       .map((p, i) => ({ id: p.id, source_url: p.link, title: p.name }))
   }
   // useEffect(() => {
@@ -107,11 +113,23 @@ export default function Edit({ attributes, setAttributes, clientId }
         <h2>Select the videos for the loop</h2>
       )}
       {attributes.categories ? <h2>Categories</h2> : null}
-      {attributes.categories ? attributes.categories.map((seq, i) => (
-        <div>
-          <a href={seq.source_url} >{seq.title}</a>
+      {attributes.categories ? (
+        <div className='category_selector'>
+          {attributes.categories.map((seq, i) => (
+            <a href={seq.source_url} data-catid={seq.id}>{seq.title}</a>
+          ))}
         </div>
-      )) : "No categories found."}
+      ) : "No categories found."}
+      {attributes.tags ? <h2>Tags</h2> : null}
+      {attributes.tags ? (
+        <div className='category_selector'>
+          {attributes.tags.map((seq, i) => (
+            <a href={seq.source_url} data-catid={seq.id}>{seq.title}</a>
+          ))}
+        </div>
+
+      ) : "No tags found."}
+      <h2>Videos: <span className='hide_in_editor'>(shift-click on video to toggle fullscreen)</span></h2>
       {attributes.sequence &&
         <div className='videos'>
           {attributes.sequence.map((seq, i) => (
@@ -125,14 +143,15 @@ export default function Edit({ attributes, setAttributes, clientId }
         </div>
       }
       <InspectorControls>
-        <PanelBody title={__('General', 'gutenberg')} initialOpen>
-          {options ? options.map((seq, i) => (
+        <PanelBody title={__('Categories to display', 'gutenberg')} initialOpen>
+          {availableCats ? availableCats.map((seq, i) => (
             <CheckboxControl
               label={seq.title}
               checked={attributes.categories.map((p, i) => p.title).includes(seq.title)}
               onChange={() => {
                 var dispPosts = []
                 var newCats = [...attributes.categories.filter(p => p.title !== "empty")]
+                var existingTags = [...attributes.tags.filter(p => p.title !== "empty")]
                 if (newCats.map(p => p.id).includes(seq.id)) {
                   newCats = newCats.slice(newCats.findIndex(c => c.id === seq.id), 1)
                 } else {
@@ -140,12 +159,48 @@ export default function Edit({ attributes, setAttributes, clientId }
                 }
                 posts.map(p => {
                   newCats.map(cat => {
-                    if (p.categories.includes(cat.id)) {
+                    if (p.categories.includes(cat.id) && !dispPosts.map(d => d.id).includes(p.id)) {
+                      dispPosts.push(p)
+                    }
+                  })
+                  existingTags.map(tag => {
+                    if (p.tags.includes(tag.id) && !dispPosts.map(d => d.id).includes(p.id)) {
                       dispPosts.push(p)
                     }
                   })
                 })
-                setAttributes({ categories: newCats, sequence: dispPosts })
+                setAttributes({ ...attributes, categories: newCats, sequence: dispPosts })
+              }}
+            />
+          )) : "No categories found."}
+        </PanelBody>
+        <PanelBody title={__('Tags to display', 'gutenberg')} initialOpen>
+          {availableTags ? availableTags.map((seq, i) => (
+            <CheckboxControl
+              label={seq.title}
+              checked={attributes.tags.map((p, i) => p.title).includes(seq.title)}
+              onChange={() => {
+                var dispPosts = []
+                var newTags = [...attributes.tags.filter(p => p.title !== "empty")]
+                var existingCats = [...attributes.categories.filter(p => p.title !== "empty")]
+                if (newTags.map(p => p.id).includes(seq.id)) {
+                  newTags = newTags.slice(newTags.findIndex(c => c.id === seq.id), 1)
+                } else {
+                  newTags.push(seq)
+                }
+                posts.map(p => {
+                  newTags.map(tag => {
+                    if (p.tags.includes(tag.id) && !dispPosts.map(d => d.id).includes(p.id)) {
+                      dispPosts.push(p)
+                    }
+                  })
+                  existingCats.map(cat => {
+                    if (p.categories.includes(cat.id) && !dispPosts.map(d => d.id).includes(p.id)) {
+                      dispPosts.push(p)
+                    }
+                  })
+                })
+                setAttributes({ ...attributes, tags: newTags, sequence: dispPosts })
               }}
             />
           )) : "No categories found."}

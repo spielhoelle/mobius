@@ -89,10 +89,19 @@ function Edit({
   const blockProps = (0,_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_3__.useBlockProps)({
     className: 'categories'
   });
-  let options;
+  let availableCats;
+  let availableTags;
   let cats = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_2__.useSelect)(select => select('core').getEntityRecords('taxonomy', 'category'), []);
+  let existingTags = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_2__.useSelect)(select => select('core').getEntityRecords('taxonomy', 'post_tag'), []);
   if (cats) {
-    options = cats.map((p, i) => ({
+    availableCats = cats.map((p, i) => ({
+      id: p.id,
+      source_url: p.link,
+      title: p.name
+    }));
+  }
+  if (existingTags) {
+    availableTags = existingTags.map((p, i) => ({
       id: p.id,
       source_url: p.link,
       title: p.name
@@ -131,9 +140,19 @@ function Edit({
   }
   return (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
     ...blockProps
-  }, !attributes.categories || attributes.categories.length === 0 && (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("h2", null, "Select the videos for the loop"), attributes.categories ? (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("h2", null, "Categories") : null, attributes.categories ? attributes.categories.map((seq, i) => (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", null, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("a", {
-    href: seq.source_url
-  }, seq.title))) : "No categories found.", attributes.sequence && (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+  }, !attributes.categories || attributes.categories.length === 0 && (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("h2", null, "Select the videos for the loop"), attributes.categories ? (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("h2", null, "Categories") : null, attributes.categories ? (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+    className: "category_selector"
+  }, attributes.categories.map((seq, i) => (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("a", {
+    href: seq.source_url,
+    "data-catid": seq.id
+  }, seq.title))) : "No categories found.", attributes.tags ? (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("h2", null, "Tags") : null, attributes.tags ? (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+    className: "category_selector"
+  }, attributes.tags.map((seq, i) => (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("a", {
+    href: seq.source_url,
+    "data-catid": seq.id
+  }, seq.title))) : "No tags found.", (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("h2", null, "Videos: ", (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("span", {
+    className: "hide_in_editor"
+  }, "(shift-click on video to toggle fullscreen)")), attributes.sequence && (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
     className: "videos"
   }, attributes.sequence.map((seq, i) => (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("video", {
     key: i + seq.id,
@@ -148,14 +167,15 @@ function Edit({
     src: seq.source_url,
     type: "video/mp4"
   }), "Your browser does not support the video tag."))), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_3__.InspectorControls, null, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_4__.PanelBody, {
-    title: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)('General', 'gutenberg'),
+    title: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)('Categories to display', 'gutenberg'),
     initialOpen: true
-  }, options ? options.map((seq, i) => (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_4__.CheckboxControl, {
+  }, availableCats ? availableCats.map((seq, i) => (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_4__.CheckboxControl, {
     label: seq.title,
     checked: attributes.categories.map((p, i) => p.title).includes(seq.title),
     onChange: () => {
       var dispPosts = [];
       var newCats = [...attributes.categories.filter(p => p.title !== "empty")];
+      var existingTags = [...attributes.tags.filter(p => p.title !== "empty")];
       if (newCats.map(p => p.id).includes(seq.id)) {
         newCats = newCats.slice(newCats.findIndex(c => c.id === seq.id), 1);
       } else {
@@ -163,13 +183,52 @@ function Edit({
       }
       posts.map(p => {
         newCats.map(cat => {
-          if (p.categories.includes(cat.id)) {
+          if (p.categories.includes(cat.id) && !dispPosts.map(d => d.id).includes(p.id)) {
+            dispPosts.push(p);
+          }
+        });
+        existingTags.map(tag => {
+          if (p.tags.includes(tag.id) && !dispPosts.map(d => d.id).includes(p.id)) {
             dispPosts.push(p);
           }
         });
       });
       setAttributes({
+        ...attributes,
         categories: newCats,
+        sequence: dispPosts
+      });
+    }
+  })) : "No categories found."), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_4__.PanelBody, {
+    title: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)('Tags to display', 'gutenberg'),
+    initialOpen: true
+  }, availableTags ? availableTags.map((seq, i) => (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_4__.CheckboxControl, {
+    label: seq.title,
+    checked: attributes.tags.map((p, i) => p.title).includes(seq.title),
+    onChange: () => {
+      var dispPosts = [];
+      var newTags = [...attributes.tags.filter(p => p.title !== "empty")];
+      var existingCats = [...attributes.categories.filter(p => p.title !== "empty")];
+      if (newTags.map(p => p.id).includes(seq.id)) {
+        newTags = newTags.slice(newTags.findIndex(c => c.id === seq.id), 1);
+      } else {
+        newTags.push(seq);
+      }
+      posts.map(p => {
+        newTags.map(tag => {
+          if (p.tags.includes(tag.id) && !dispPosts.map(d => d.id).includes(p.id)) {
+            dispPosts.push(p);
+          }
+        });
+        existingCats.map(cat => {
+          if (p.categories.includes(cat.id) && !dispPosts.map(d => d.id).includes(p.id)) {
+            dispPosts.push(p);
+          }
+        });
+      });
+      setAttributes({
+        ...attributes,
+        tags: newTags,
         sequence: dispPosts
       });
     }
@@ -234,7 +293,12 @@ function save(props) {
   }, props.attributes.categories.map((seq, i) => (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("a", {
     href: seq.source_url,
     "data-catid": seq.id
-  }, seq.title))) : "No categories found.", props.attributes.sequence && (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+  }, seq.title))) : "No categories found.", props.attributes.tags ? (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("h2", null, "Tags") : null, props.attributes.tags ? (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
+    className: "category_selector"
+  }, props.attributes.tags.map((seq, i) => (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("a", {
+    href: seq.source_url,
+    "data-catid": seq.id
+  }, seq.title))) : "No tags found.", (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("h2", null, "Videos: (shift-click on video to toggle fullscreen)"), props.attributes.sequence && (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("div", {
     className: "videos"
   }, props.attributes.sequence.map((seq, i) => (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("video", {
     width: "320",

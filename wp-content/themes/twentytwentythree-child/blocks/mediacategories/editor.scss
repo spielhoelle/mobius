@@ -6,7 +6,6 @@
  */
 
 .categories {
-  background-color: rgb(201, 255, 201);
   position: relative;
   height: auto;
   .videos{
@@ -23,4 +22,8 @@
     pointer-events: all;
     object-fit: cover;
   }
+}
+
+.hide_in_editor {
+  display: none;
 }

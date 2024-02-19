@@ -8,7 +8,6 @@
  * Replace them with your own styles or remove the file completely.
  */
 .categories {
-  background-color: rgb(201, 255, 201);
   position: relative;
   height: auto;
 }
@@ -26,6 +25,10 @@
   pointer-events: all;
   -o-object-fit: cover;
      object-fit: cover;
+}
+
+.hide_in_editor {
+  display: none;
 }
 
 /*# sourceMappingURL=mediacategories.css.map*/
