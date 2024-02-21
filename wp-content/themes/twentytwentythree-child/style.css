@@ -88,4 +88,5 @@ Twenty Twenty-Three Child is distributed under the terms of the GNU GPL.
 #header {
   position: fixed;
   z-index: 2;
+  width: 100%;
 }
